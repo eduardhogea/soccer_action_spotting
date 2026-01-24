@@ -84,7 +84,8 @@ def main(model_args, opt_args, train_args, main_args):
     logging.info(opt_args)
     logging.info(train_args)
 
-    model = load_model(model_args, train_args).cuda()
+    device = torch.device("cuda" if main_args.GPU >= 0 and torch.cuda.is_available() else "cpu")
+    model = load_model(model_args, train_args).to(device)
     logging.info(model)
 
     total_args = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -264,7 +265,8 @@ def parse_args():
                       'num_random_samples': args.num_random_samples,
                       'cache': not args.no_cache,
                       'overwrite_cache': args.overwrite_cache,
-                      'overwrite_test_results': args.overwrite_test_results})
+                      'overwrite_test_results': args.overwrite_test_results,
+                      'GPU': args.GPU})
 
     logs = parse_logs(args, conf.model)
 
